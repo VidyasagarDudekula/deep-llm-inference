@@ -5,9 +5,15 @@ stb_sft = stable_softmax()
 stb_log_sft = stable_log_softmax()
 
 def compute_entropy(logits: torch.Tensor):
+    B, T = 1, 1
+    if logits.dim() == 1:
+        T, C = logits.shape
+    elif logits.dim() == 2:
+        B, T, C = logits.shape
+    
     probs = stb_sft(logits, dim=-1)
     log_probs = stb_log_sft(logits, dim=-1)
-    out = - torch.sum(probs * log_probs, dim=-1)
+    out = - torch.sum(probs * log_probs)/(B * T)
     return out
 
 
